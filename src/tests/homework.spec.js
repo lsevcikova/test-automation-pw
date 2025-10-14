@@ -11,5 +11,5 @@ test('homework', async ({ page }) => {
      // Input with password
     await page.locator('body .card input#password-confirm').fill('awesomePassword');
     // Submit button
-    await page.locator(".btn-primary").screenshot({ path: "submit_btn.png" });
+    await page.getByRole('button', {name: 'Zaregistrovat'}).screenshot({ path: "submit_btn.png" });
 });
