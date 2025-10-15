@@ -11,5 +11,34 @@ test('homework', async ({ page }) => {
      // Input with password
     await page.locator('body .card input#password-confirm').fill('awesomePassword');
     // Submit button
-    await page.getByRole('button', {name: 'Zaregistrovat'}).screenshot({ path: "submit_btn.png" });
+    const submitButton = await page.getByRole('button', {name: 'Zaregistrovat'});
+    await submitButton.click();
 });
+
+test('lesson 3', async ({page}) => {
+    await page.goto('/prihlaseni');
+    const headingLocator = page.getByRole('heading', {level: 1});
+    const headingText = await headingLocator.textContent();
+    console.log(headingText);
+
+    const emailField = await page.getByLabel('Email');
+    console.log('Is email field visible?' + await emailField.isVisible());
+    console.log('Is email field enabled?' + await emailField.isEnabled());
+
+    const forgotPassword = page.getByText('Zapomněli jste své heslo?');
+    console.log("Forgot password href:" + await forgotPassword.getAttribute("href"));
+
+    const passwordField = await page.getByLabel('Heslo');
+    console.log('Is password field visible?' + await passwordField.isVisible());
+    console.log('Is password field enabled?' + await passwordField.isEnabled());
+
+    const loginButton = await page.getByRole('button', { name: 'Přihlásit'})
+    console.log('Text of the login button is' + await loginButton.textContent());
+
+    await emailField.fill('da-app.admin@czechitas.cz');
+    await passwordField.fill('Czechitas123');
+    await loginButton.click()
+
+    const userName = page.locator('.navbar-right').locator('strong')
+    console.log('Logged user: ' + await userName.textContent());
+})
