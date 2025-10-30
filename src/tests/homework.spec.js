@@ -190,15 +190,23 @@ test('lesson 5', async ({page}) => {
 //Homework 4, Lesson 5
 
 test.describe('Registration page', { tag: "@smoke" }, () => {
+    let inputName;
+    let inputEmail;
+    let inputPassword;
+    let inputConfirmPassword;
+    let submitButton;
+    let errorMessage;
+    let now;
+
     test.beforeEach(async ({page}) => {
         await page.goto('/registrace');
-        const inputName = page.getByLabel('Jméno a příjmení');
-        const inputEmail = page.getByLabel('Email');
-        const inputPassword = page.getByLabel('Heslo');
-        const inputConfirmPassword = page.getByLabel('Kontrola hesla');
-        const submitButton = page.getByRole('button', {name: 'Zaregistrovat'});
-        const errorMessage = page.locator('.invalid-feedback').locator('strong')
-        const now = Date.now();
+        inputName = page.getByLabel('Jméno a příjmení');
+        inputEmail = page.getByLabel('Email');
+        inputPassword = page.getByLabel('Heslo');
+        inputConfirmPassword = page.getByLabel('Kontrola hesla');
+        submitButton = page.getByRole('button', {name: 'Zaregistrovat'});
+        errorMessage = page.locator('.invalid-feedback').locator('strong')
+        now = Date.now();
     })
 
     test('Should create a new registration', { tag: "@registration" }, async ({ page }) => {
