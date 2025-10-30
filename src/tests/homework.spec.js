@@ -157,3 +157,85 @@ test('homework - invalid password', async ({ page }) => {
     await expect(page).toHaveURL(/.*registrace/); 
 
 })
+
+test('lesson 5', async ({page}) => {
+    await page.goto('/prihlaseni');
+    await expect(page).toHaveScreenshot();
+
+    const emailField = page.getByLabel('Email');
+    await expect(emailField).toBeVisible();
+    await expect(emailField).toBeEnabled();
+
+    const passwordField = page.getByLabel('Heslo');
+    await expect(passwordField, 'Password field shoud be visible').toBeVisible();
+    await expect(passwordField).toBeEnabled();
+
+    const loginButton = await page.getByRole('button', { name: 'Přihlásit'})
+    await expect(loginButton).toHaveText('Přihlásit');
+
+    await emailField.fill('da-app.admin@czechitas.cz');
+    await passwordField.fill('Czechitas123');
+    await loginButton.click()
+
+    const userName = page.locator('.navbar-right').locator('strong')
+    await expect(userName).toHaveText('Lišák Admin');
+
+    await page.getByRole('link', { name: ' Přihlášky' }).click();
+    await page.waitForLoadState();
+
+    await page.locator('tbody').locator('tr').first().waitFor();
+
+}) 
+
+//Homework 4, Lesson 5
+
+test.describe('Registration page', { tag: "@smoke" }, () => {
+    test.beforeEach(async ({page}) => {
+        await page.goto('/registrace');
+        const inputName = page.getByLabel('Jméno a příjmení');
+        const inputEmail = page.getByLabel('Email');
+        const inputPassword = page.getByLabel('Heslo');
+        const inputConfirmPassword = page.getByLabel('Kontrola hesla');
+        const submitButton = page.getByRole('button', {name: 'Zaregistrovat'});
+        const errorMessage = page.locator('.invalid-feedback').locator('strong')
+        const now = Date.now();
+    })
+
+    test('Should create a new registration', { tag: "@registration" }, async ({ page }) => {
+
+        await inputName.fill('Rachel Green');
+        await inputEmail.fill('rachel.green' + now + '@gmail.com');
+        await inputPassword.fill('rachelGreen30');
+        await inputConfirmPassword.fill('rachelGreen30');
+        await submitButton.click();
+
+        await expect(page).toHaveURL('https://team8-2022brno.herokuapp.com/zaci');
+    })
+
+    test('Should not register with existing account', { tag: "@registration" }, async ({ page }) => {
+
+        await inputName.fill('Lucie Sevcikova');
+        await inputEmail.fill('lucie.sevcikova108@gmail.com');
+        await inputPassword.fill('myAwesomePassword108');
+        await inputConfirmPassword.fill('myAwesomePassword108');
+        await submitButton.click();
+        await expect(errorMessage).toBeVisible(); 
+        await expect(errorMessage).toHaveText('Účet s tímto emailem již existuje');
+        await expect(page).not.toHaveURL('https://team8-2022brno.herokuapp.com/zaci');
+
+    })
+
+    test('Should not create new registration with invalid password', { tag: "@registration" }, async ({ page }) => {
+
+        await inputName.fill('Monika Geller');
+        await inputEmail.fill('monika.geller' + now + '@gmail.com');
+        await inputPassword.fill('1234');
+        await inputConfirmPassword.fill('1234');
+        await submitButton.click();
+        await expect(errorMessage).toBeVisible(); 
+        await expect(errorMessage).toHaveText('Heslo musí obsahovat minimálně 6 znaků, velké i malé písmeno a číslici');
+        await expect(page).toHaveURL(/.*registrace/); 
+
+    })
+    
+})
