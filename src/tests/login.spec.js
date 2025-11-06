@@ -1,37 +1,49 @@
+require('dotenv').config;
 import { expect, test } from "@playwright/test";
+
+const{ADMIN_USERNAME, ADMIN_PASSWORD} = process.env;
+
+async function getToastError(page) {
+    return page.locator(".toast-error");
+}
+
+async function getUserNameTextBox(page) {
+    return page.getByLabel('Email');
+}
+
+async function login(page, username, password) {
+    await page.goto('/prihlaseni');
+    const getUserNameTextBox = await getUserNameTextBox(page);
+    await getUserNameTextBox.fill(username);
+    await page.getByLabel('Heslo').fill(password);
+    await page.getByRole('button', { name: 'Přihlásit'}).click();
+}
 
 test.describe("Login page", () => {
     test.beforeEach(async ({page}) => {
         await page.goto("/prihlaseni");
     })
 
-    test("valid login", async ({ page }) => {
-        const emailField = page.getByLabel("Email");
-        const passwordField = page.getByLabel("Heslo");
-        const loginButton = page.getByRole('button', { name: 'Přihlásit' });
+    test ('Check login form elements', async ({page}) => {
+        const userNameTextBox = await getUserNameTextBox(page);
+        await expect(userNameTextBox).toBeVisible();
+        await expect(userNameTextBox).toBeEnabled();
+    })
 
-        await emailField.fill("da-app.admin@czechitas.cz");
-        await passwordField.fill("Czechitas123");
-        await loginButton.click();
+    test("valid login", {tag: ['@smoke', '@login']}, async ({ page }) => {
+        await login(page, ADMIN_USERNAME, ADMIN_PASSWORD);
 
         const user = page.locator(".navbar-right").locator("strong");
         await expect(user).toHaveText("Lišák Admin");
     });
     test.describe("Invalid logins", () => {
         test.beforeEach(async ({page}) => {
-            const emailField = page.getByLabel("Email");
-            const passwordField = page.getByLabel("Heslo");
-            const loginButton = page.getByRole('button', { name: 'Přihlásit' });
-
-            await emailField.fill("da-app.admin@czechitas.cz");
-            await passwordField.fill("12345");
-            await loginButton.click();
+            await login(page, ADMIN_USERNAME, '12345')
         }) 
 
         test("login with invalid credentials - toast error", async ({ page }) => {
-            const toastError = page.locator(".toast-error")
-            await expect(toastError).toBeVisible();
-            await expect(toastError).not.toBeVisible();
+            await expect(await getToastError(page)).toBeVisible();
+            await expect(await getToastError(page)).not.toBeVisible({ timeout: 10000 });
         });
 
         test("login with invalid credentials - field feedback", async ({ page }) => {
