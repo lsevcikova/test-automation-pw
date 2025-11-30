@@ -1,6 +1,8 @@
-export class RegisterPage {
+import { AppPage } from "./app.page";
+
+export class RegisterPage extends AppPage {
   constructor(page) {
-    this.page = page;
+    super(page, "registrace");
     this.inputName = this.page.getByLabel("Jméno a příjmení");
     this.inputEmail = this.page.getByLabel("Email");
     this.inputPassword = this.page.getByLabel("Heslo");
@@ -11,10 +13,6 @@ export class RegisterPage {
     this.submitButton = this.page.getByRole("button", {
       name: "Zaregistrovat",
     });
-  }
-
-  async open() {
-    await this.page.goto("/registrace");
   }
 
   async register(name, email, password, confirmPassword) {

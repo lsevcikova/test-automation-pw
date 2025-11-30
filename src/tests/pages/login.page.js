@@ -1,6 +1,8 @@
-export class LoginPage {
+import { AppPage } from "./app.page";
+
+export class LoginPage extends AppPage {
     constructor(page) {
-        this.page = page;
+        super(page, "prihlaseni");
         this.emailField = this.page.getByLabel("Email");
         this.passwordField = this.page.getByLabel("Heslo");
         this.loginButton = this.page.getByRole('button', { name: 'Přihlásit' });
@@ -8,10 +10,6 @@ export class LoginPage {
         this.fieldError = this.page.locator(".invalid-feedback");
         this.usernameDropdown = this.page.locator(".navbar-right").locator("strong");
         this.logoutLink = this.page.locator("#logout-link");
-    }
-
-    async open() {
-        await this.page.goto("/prihlaseni");
     }
 
     async login(username, password) {
